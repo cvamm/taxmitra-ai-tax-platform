@@ -5,3 +5,4 @@ build
 .env
 *.tsbuildinfo
 .DS_Store
+.pages-server
