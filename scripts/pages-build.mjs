@@ -28,8 +28,10 @@ mkdirSync(stash, { recursive: true });
 
 // Absent from the export: unsupported by `output: "export"`, or pointless
 // without a server. Stashed rather than deleted so the checkout stays restorable.
+// /dashboard is kept — it catches the session read and renders its signed-out
+// shell statically; /admin cannot, because it awaits searchParams.
 const serverOnly = (
-  process.env.PAGES_STASH ?? "src/app/api,src/proxy.ts,src/app/admin,src/app/dashboard"
+  process.env.PAGES_STASH ?? "src/app/api,src/proxy.ts,src/app/admin"
 ).split(",");
 for (const path of serverOnly) {
   const from = join(root, path);
