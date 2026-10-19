@@ -45,6 +45,17 @@ for (const file of findFiles(join(root, "src"), ".tsx")) {
   }
 }
 
+// Metadata routes are route handlers under the hood, so `output: "export"`
+// demands they opt into static generation explicitly.
+for (const path of ["src/app/sitemap.ts", "src/app/robots.ts"]) {
+  const file = join(root, path);
+  if (!existsSync(file)) continue;
+  const source = readFileSync(file, "utf8");
+  if (/^export const dynamic\b/m.test(source)) continue;
+  writeFileSync(file, source.replace(/^(import[^\n]*\n)/m, `$1\nexport const dynamic = "force-static";\n`));
+  console.log(`  force-static ${path}`);
+}
+
 writeFileSync(
   join(root, "next.config.ts"),
   `import type { NextConfig } from "next";
