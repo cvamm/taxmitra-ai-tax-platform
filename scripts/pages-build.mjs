@@ -16,6 +16,9 @@ import { join } from "node:path";
 
 const root = process.cwd();
 const base = process.env.PAGES_BASE ?? `/${join(root, "..").split(/[\\/]/).pop()}`;
+if (!/^\/[A-Za-z0-9._~-]*$/.test(base)) {
+  throw new Error(`PAGES_BASE must be a single path segment starting with "/", got ${JSON.stringify(base)}`);
+}
 
 requireCleanCheckout();
 
@@ -35,7 +38,7 @@ for (const path of ["src/app/api", "src/proxy.ts", "src/app/admin", "src/app/das
 let stripped = 0;
 for (const file of findFiles(join(root, "src"), ".tsx")) {
   const source = readFileSync(file, "utf8");
-  const cleaned = source.replace(/^export const dynamic = "force-dynamic";\n/gm, "");
+  const cleaned = source.replace(/^export const dynamic\s*=\s*"force-dynamic";\r?\n/gm, "");
   if (cleaned !== source) {
     writeFileSync(file, cleaned);
     stripped++;
