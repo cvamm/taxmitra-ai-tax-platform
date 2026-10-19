@@ -28,7 +28,10 @@ mkdirSync(stash, { recursive: true });
 
 // Absent from the export: unsupported by `output: "export"`, or pointless
 // without a server. Stashed rather than deleted so the checkout stays restorable.
-for (const path of ["src/app/api", "src/proxy.ts", "src/app/admin", "src/app/dashboard"]) {
+const serverOnly = (
+  process.env.PAGES_STASH ?? "src/app/api,src/proxy.ts,src/app/admin,src/app/dashboard"
+).split(",");
+for (const path of serverOnly) {
   const from = join(root, path);
   if (!existsSync(from)) continue;
   renameSync(from, join(stash, path.replaceAll(/[\\/]/g, "__")));
